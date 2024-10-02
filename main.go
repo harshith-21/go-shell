@@ -5,6 +5,7 @@ import (
     "fmt"
     "os"
 	"time"
+	"strings"
 )
 
 func main() {
@@ -28,7 +29,9 @@ func repl(reader *bufio.Reader, writer *bufio.Writer) {
     fmt.Fprintln(writer, "Welcome to the Go Shell!")
 
 	// Placeholder for valid commands
-    validCommands := []string{}
+    validCommands := map[string]func([]string, *bufio.Writer){
+		"exit": exitCommand,      
+    }
 
 	for {
         // Print the prompt (pwd will be added later)
@@ -52,20 +55,26 @@ func repl(reader *bufio.Reader, writer *bufio.Writer) {
             break
         }
 
-        // Validate command
-        isValid := false
-        for _, command := range validCommands {
-            if input == command {
-                isValid = true
-                break
-            }
-        }
+		// Split input into command and arguments
+		parts := strings.Fields(input) // This will split the input by spaces
+		if len(parts) == 0 {
+			continue // Ignore empty input
+		}
 
-        // Respond based on command validity
-        if isValid {
-            fmt.Fprintf(writer, "Executing command: %s\n", input)
-        } else {
-            fmt.Fprintln(writer, string(input) + " command not defined.")
-        }
+		command := parts[0]
+		args := parts[1:]
+
+		// Check if command is valid and execute it
+		if cmdFunc, exists := validCommands[command]; exists {
+			cmdFunc(args, writer) // Call the command function
+		} else {
+			fmt.Fprintln(writer, "Command not defined.")
+		}
+
     }
+}
+
+func exitCommand(args []string, writer *bufio.Writer) {
+    fmt.Fprintln(writer, "Exiting the Go Shell. Goodbye!")
+    os.Exit(0) // Use os.Exit to terminate the program
 }
