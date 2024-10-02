@@ -4,6 +4,7 @@ import (
     "bufio"
     "fmt"
     "os"
+	"time"
 )
 
 func main() {
@@ -31,7 +32,8 @@ func repl(reader *bufio.Reader, writer *bufio.Writer) {
 
 	for {
         // Print the prompt (pwd will be added later)
-        fmt.Fprint(writer, "> ")
+		currentTime := time.Now().Format("15:04:05")
+        fmt.Fprintf(writer, "%s > ", currentTime)
         writer.Flush()
 
         // Read user input
