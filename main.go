@@ -68,7 +68,7 @@ func repl(reader *bufio.Reader, writer *bufio.Writer) {
 		if cmdFunc, exists := validCommands[command]; exists {
 			cmdFunc(args, writer) // Call the command function
 		} else {
-			fmt.Fprintln(writer, "Command not defined.")
+			fmt.Fprintln(writer, command, "Command not defined.")
 		}
 
     }
